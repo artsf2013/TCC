@@ -1,0 +1,215 @@
+######## R - como interface basica de análise para Ecologia de paisagem ########
+
+### Arthur Soares Fernandes - 09.10.2019
+
+###Importação, análise e exposição gráfica de dados obtidos em formato raster.
+### Cada tabela utilizada, deve conter dados obtidos para as classes selecionadas em uma paisagem georreferenciada
+identificadas em SIG e expostas em formato "tif". As colunas de variáveis resposta são advindas das
+métricas selecionas no programa FRAGSTATS v4.2. 
+
+Arthur Soares Fernandes
+
+##### importar tabelas
+###  A fim de exemplicar, cada tabela exposta aqui contem os dados obtidos para as classes selecionadas na paisagem do
+Quadrilátero Ferrífero - MG, georreferenciados em SIG por Duarte e colaboradores em 2018 e analisadas pelo software FRAGSTATS v4.2.  
+
+As tabelas representam as classes (Floresta, Cerrado e Campos Rupestres).
+A métricas que compõe as colunas de dados (,2,3,4,5) foram ("Area", "Euclidean nearest neighbor distance, ENN",
+"índice de forma - SHAPE" e "índice de proximidade - PROX").
+
+# Florestas (flo)
+
+flo<-read.table(file.choose(),header=T)
+flo
+attach(flo)
+attach(flo)
+floa<-as.numeric(AREA)
+floe<-as.numeric(ENN)*10
+flos<-as.numeric(SHAPE)/10
+flopr<-as.numeric(PROX)
+detach(flo)
+
+# Campos rupestres (camp)
+
+camp<-read.table(file.choose(),header=T)
+camp
+attach(camp)
+attach(camp)
+campa<-as.numeric(AREA)
+campe<-as.numeric(ENN)*10
+camps<-as.numeric(SHAPE)/10
+campr<-as.numeric(PROX)
+detach(camp)
+
+# Cerrado (cer)
+
+cer<-read.table(file.choose(),header=T)
+cer
+attach(cer)
+attach(cer)
+cera<-as.numeric(AREA)
+cere<-as.numeric(ENN)*10
+cers<-as.numeric(SHAPE)/10
+cerpr<-as.numeric(PROX)
+detach(cer)
+
+
+########### Análises estatísticas disponíveis no pacote BASE #########
+
+##### Estatísticas descritivas:
+##### mean 
+
+mean(floa)
+mean(cera)
+mean(campa)
+
+mean(floe)
+mean(cere)
+mean(campe)
+
+mean(flos)
+mean(cers)
+mean(camps)
+
+##### quantiles
+
+quantile(floa,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(floe,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(flos,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(flopr,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(cera,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(cere,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(cers,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(cerp,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(campa,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(campe,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(camps,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+quantile(campr,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00))
+
+##### Correlação entre colunas de mesma tabela (Classe de área natural):
+
+##### Correlação e regressão linear
+
+cor(floa,floe)
+cor(floa,flos)
+cor(flos,floe)
+lm(floa~floe)
+lm(floa~flos)
+lm(flos~floe)
+
+cor(campa,campe)
+cor(campa,camps)
+cor(camps,campe)
+lm(campa~campe)
+lm(campa~camps)
+lm(camps~campe)
+
+cor(cera,cere)
+cor(cera,cers)
+cor(cers,cere)
+lm(cera~cere)
+lm(cera~cers)
+lm(cers~cere)
+
+##### Análise de significancia entre médias de cada população 
+de fragmentos observada:
+
+##### Teste T
+
+t.test(floa,cera)
+t.test(floa,campa)
+t.test(cera,campa)
+
+t.test(floe,cere)
+t.test(floe,campe)
+t.test(cere,campe)
+
+t.test(flos,cers)
+t.test(flos,camps)
+t.test(cers,camps)
+
+##### Análise de significancia entre variância de cada população 
+de fragmentos observada:
+
+##### Teste de Fisher (var.test), 0.95. 
+
+var.test(floa,campa,conf.level=0.95)
+var.test(floa,cera,conf.level=0.95)
+var.test(cera,campa,conf.level=0.95)
+
+var.test(floe,campe,conf.level=0.95)
+var.test(floe,cere,conf.level=0.95)
+var.test(cere,campe,conf.level=0.95)
+
+var.test(flos,camps,conf.level=0.95)
+var.test(flos,cers,conf.level=0.95)
+var.test(cers,camps,conf.level=0.95)
+
+
+###### BAR PLOT >>>> AREA ~ CLASSE #########
+
+barplot(floa)
+barplot(quantile(floa))
+barplot(quantile(floa),ylim=c(0,1000))
+
+par(mfrow=c(1,3))
+bp.floa<-barplot(quantile(floa,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00)),ylim=c(0,700),xlab="FLORESTAS",ylab="AREA(ha)")
+bp.cera<-barplot(quantile(cera,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00)),ylim=c(0,700),xlab="CERRADO")
+bp.campa<-barplot(quantile(campa,c(0.10,0.20,.30,.40,.50,.60,.70,.80,.90,1.00)),ylim=c(0,700),xlab="CAMPOS RUPESTRES")
+
+par(mfrow=c(2,3))
+bp.floa.lh<-barplot(quantile(floa,c(0.10,0.20,.30,.40,.50)), +
++ ylim=c(0,6),xlab="FLORESTAS",ylab="AREA(ha)",col="red")
+bp.cera.lh<-barplot(quantile(cera,c(0.10,0.20,.30,.40,.50)), +
++ ylim=c(0,6),xlab="CERRADO",col="red")
+bp.campa.lh<-barplot(quantile(campa,c(0.10,0.20,.30,.40,.50)), +
++ ylim=c(0,6),xlab="CAMPOS RUPESTRES",col="red") +
+bp.floa.uh<-barplot(quantile(floa,c(.60,.70,.80,.90,1.00)), +
++ ylim=c(0,700),xlab="FLORESTAS",ylab="AREA(ha)",col="green")
+bp.cera.uh<-barplot(quantile(cera,c(.60,.70,.80,.90,1.00)), +
++ ylim=c(0,700),xlab="CERRADO",col="green")
+bp.campa.uh<-barplot(quantile(campa,c(.60,.70,.80,.90,1.00)), +
++ ylim=c(0,700),xlab="CAMPOS RUPESTRES",col="green")
+
+
+
+###### BAR PLOT >>>> ENN ~ CLASSE #########
+
+
+par(mfrow=c(1,3))
+barplot(quantile(floe,c(.10,.20,.30,.40,.50,.60,.70,.80,.90,1.00)), +
++ ylim=c(0,3000),xlab="FLORESTAS",ylab="ENN(m)")
+barplot(quantile(cere,c(.10,.20,.30,.40,.50,.60,.70,.80,.90,1.00)), +
++ylim=c(0,3000),xlab="CERRADO",ylab="ENN(m)")
+barplot(quantile(campe,c(.10,.20,.30,.40,.50,.60,.70,.80,.90,1.00)), +
++ ylim=c(0,3000),xlab="CAMPOS RUPESTRES",ylab="ENN(m)")
+
+
+
+###### BARPLOT >>>>>> SHAPE ~ CLASSE ##########
+
+
+par(mfrow=c(1,3))
+barplot(quantile(flos,c(.10,.20,.30,.40,.50,.60,.70,.80,.90,1.00)), +
++ ylim=c(0,50),xlab="FLORESTAS",ylab="SHAPE indx")
+barplot(quantile(cers,c(.10,.20,.30,.40,.50,.60,.70,.80,.90,1.00)), +
++ ylim=c(0,50),xlab="CERRADO",ylab="SHAPE indx)")
+barplot(quantile(camps,c(.10,.20,.30,.40,.50,.60,.70,.80,.90,1.00)), +
++ ylim=c(0,50),xlab="CAMPOS RUPESTRES",ylab="SHAPE indx")
+
+barplot(quantile(flos,c(.10,.20,.30,.40,.50,.60,.70,.80,.90)), +
++ ylim=c(0,3),xlab="FLORESTAS",ylab="SHAPE indx",col="blue")
+barplot(quantile(cers,c(.10,.20,.30,.40,.50,.60,.70,.80,.90)), +
++ ylim=c(0,3),xlab="CERRADO",ylab="SHAPE indx)",col="blue")
+barplot(quantile(camps,c(.10,.20,.30,.40,.50,.60,.70,.80,.90)), +
++ ylim=c(0,3),xlab="CAMPOS RUPESTRES",ylab="SHAPE indx",col="blue")
+
+####### BARPLOT >>>>> PROX ~ CLASSE ###########
+
+par(mfrow=c(1,3))
+hist(flopr, breaks=20,ylim=c(0,600))
+hist(cerpr,breaks=20,ylim=c(0,600))
+hist(campr,breaks=20,ylim=c(0,600))
+
+###################################################
+###################################################
